@@ -11,7 +11,7 @@ public class War {
         Deck deck = new Deck(true);
         dealCards(deck);
         while(!playerOneDeck.isEmpty() && !playerTwoDeck.isEmpty()){
-            System.out.print("Player one has "+ playerOneDeck.size() + " cards : player two has " + playerTwoDeck.size() + " cards     : ");
+            System.out.print("Player one has "+ playerOneDeck.size() + " cards : player two has " + playerTwoDeck.size() + " cards  :  ");
             compareCards(playerOneDeck.poll(), playerTwoDeck.poll());
         }
         if(playerOneDeck.isEmpty()){
