@@ -4,6 +4,7 @@ import games.deck.Card;
 import games.player.Player;
 
 import java.sql.SQLOutput;
+import java.util.List;
 import java.util.Scanner;
 
 public class BlackjackMenu {
@@ -36,7 +37,17 @@ public class BlackjackMenu {
     }
     public String askUserForName(int playerNumber){
         System.out.print("Enter a name for player " + playerNumber + ": ");
-        return in.nextLine();
+        String name = "";
+        while(true) {
+            name = in.nextLine();
+            if(name.contains("'")){
+                System.out.println("Invalid name. Name must not contain ' ");
+                System.out.println("Please try again: ");
+            } else{
+                break;
+            }
+        }
+        return name;
     }
     public int askUserForNumberOfDecks() {
         System.out.print("Enter how many decks you would like to play with: ");
@@ -129,5 +140,60 @@ public class BlackjackMenu {
             return false;
         }
         return true;
+    }
+
+    public boolean askIfBetting() {
+        System.out.println("----------------");
+        System.out.println("1) Yes");
+        System.out.println("2) No");
+        System.out.println("Would you like to gamble?");
+        while (true) {
+            String userInput = in.nextLine();
+            if(userInput.equals("1")){
+                return true;
+            } else if (userInput.equals("2")) {
+                return false;
+            }
+            else{
+                System.out.println("Please enter a 1 or 2: ");
+            }
+        }
+    }
+    public int askForBet(Player player){
+        System.out.println(player.getName() + " has a balance of $" + player.getBalance());
+        System.out.print("Enter the amount you would like to bet: $");
+        int bet = 0;
+        while (true) {
+            try {
+                String userInput = in.nextLine();
+                bet = Integer.parseInt(userInput);
+                if(bet >= 0) {
+                    break;
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid Input, please type a positive whole number: ");
+            }
+        }
+        return bet;
+    }
+
+    public void showReceipt(List<Player> players) {
+        System.out.println("-----------------------------------");
+        System.out.println("Final Results For This Game");
+        System.out.println("-----------------------------------");
+
+        for (int i = 1; i < players.size(); i++) {
+            Player currentPlayer = players.get(i);
+
+            if(currentPlayer.getBalance() > 0){
+                System.out.println(currentPlayer.getName() + " Wins $" + currentPlayer.getBalance());
+            } else if (currentPlayer.getBalance() < 0) {
+                System.out.println(currentPlayer.getName() + " Owes $" + currentPlayer.getBalance());
+            } else {
+                System.out.println(currentPlayer.getName() + " Goes Home Even");
+            }
+            System.out.println("---");
+        }
+
     }
 }

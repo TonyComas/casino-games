@@ -8,7 +8,10 @@ import java.util.List;
 public class Player {
     private List<Card> hand = new ArrayList<Card>();
     private String name;
-    private int winnings;
+    private int balance = 0;
+    private int currentBet = 0;
+
+    public Player(){}
     public Player(String name){
         this.name = name;
 
@@ -51,6 +54,13 @@ public class Player {
         }
         return discardedCards;
     }
+    public int changeBalance(int amountToChange){
+        balance += amountToChange;
+        return balance;
+    }
+    public void bet(int amountToBet){
+        changeBalance(-amountToBet);
+    }
 
     public List<Card> getHand() {
         return hand;
@@ -60,12 +70,12 @@ public class Player {
         return name;
     }
 
-    public int getWinnings() {
-        return winnings;
+    public int getBalance() {
+        return balance;
     }
 
-    public void setWinnings(int winnings) {
-        this.winnings = winnings;
+    public void setBalance(int balance) {
+        this.balance = balance;
     }
 
 
@@ -77,4 +87,11 @@ public class Player {
         this.name = name;
     }
 
+    public int getCurrentBet() {
+        return currentBet;
+    }
+
+    public void setCurrentBet(int currentBet) {
+        this.currentBet = currentBet;
+    }
 }

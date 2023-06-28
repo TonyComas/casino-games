@@ -20,6 +20,8 @@ public class Blackjack {
     private final int SHOW_CARD_COUNT = 6;
     private final int MINIMUM_STARTING_DECK_SIZE = 52;
     private int cardCount = 0;
+
+    private boolean isBetting = true;
     private boolean isTurn;
     public Blackjack(){}
     public void run(){
@@ -29,9 +31,13 @@ public class Blackjack {
             if(deck.getMainDeck().size() < startingDeckSize/2 || deck.getMainDeck().size() < MINIMUM_STARTING_DECK_SIZE){
                 deck = new Deck(numberOfDecks, true);
             }
+            if(isBetting) {
+                takeBets();
+            }
             dealCards();
             play();
             if(menu.askUserToPlayAnotherRound()){
+                menu.showReceipt(players);
                 break;
             }
             clearBoard();
@@ -42,6 +48,7 @@ public class Blackjack {
         players = createPlayers();
         int numberOfDecks = menu.askUserForNumberOfDecks();
         deck = new Deck(numberOfDecks, true);
+        menu.askIfBetting();
         return numberOfDecks;
     }
     private List<Player> createPlayers(){
@@ -70,7 +77,7 @@ public class Blackjack {
         } else if (input == DOUBLE_DOWN) {
             doubleDown(player);
         } else if (input == SPLIT) {
-            splt(player);
+            split(player);
         } else if (input == SURRENDER) {
             surrender(player);
         } else if (input == SHOW_CARD_COUNT){
@@ -90,18 +97,51 @@ public class Blackjack {
         }
     }
     private void doubleDown(Player player){
+        player.bet(player.getCurrentBet());
+        player.setCurrentBet(player.getCurrentBet() * 2);
         hit(player);
         stand();
     }
-    private void splt(Player player){
-        Player player1 = new Player(player.getName());
-        Player player2 = new Player(player.getName());
+    private void split(Player player){
+        Player player1 = new Player(player.getName() + "'s first Split");
+        Player player2 = new Player(player.getName() + "'s second Split");
         player1.drawCard(player.dealCard());
+        player1.setCurrentBet(player.getCurrentBet());
+        player1.setBalance(player.getBalance());
         player2.drawCard(player.dealCard());
+        player2.setCurrentBet(player.getCurrentBet());
+        player2.bet(player2.getCurrentBet());
         players.remove(player);
         players.add(player1);
         players.add(player2);
     }
+    public void fixSplit(){
+        Player joinedPlayer = new Player();
+        int i = 1;
+        while(i != 0){
+            i = 0;
+            for (int j = 1; j < players.size(); j++) {
+                Player player = players.get(j);
+                String name = player.getName();
+                String[] nameParts = name.split("'");
+                if (nameParts.length > 1) {
+                    if(i == 0){
+                        joinedPlayer = new Player(nameParts[0]);
+                        joinedPlayer.setBalance(player.getBalance());
+                        players.remove(j);
+                        players.add(joinedPlayer);
+                        j--;
+                    } else if(i == 1){
+                        joinedPlayer.changeBalance(player.getBalance());
+                        players.remove(j);
+                        j--;
+                    }
+                    i++;
+                }
+            }
+        }
+    }
+
     private void surrender(Player player){
         deck.discardHand(player.emptyHand());
         isTurn = false;
@@ -114,24 +154,28 @@ public class Blackjack {
             stand();
         }
     }
-
     private void determineWinners(){
         int dealerScore = players.get(0).getBjHandValue();
         menu.showBlackjackHand(players.get(0));
+
         for(int i = 1; i < players.size(); i++){
-            int playerScore = players.get(i).getBjHandValue();
+            Player currentPlayer = players.get(i);
+            int currentBet = currentPlayer.getCurrentBet();
+            int playerScore = currentPlayer.getBjHandValue();
+
             if(playerScore == 0) {
-                menu.playerSurrendered(players.get(i));
+                menu.playerSurrendered(currentPlayer);
+                currentPlayer.changeBalance(currentBet / 2);
             } else if((playerScore > 21 && dealerScore > 21) || (playerScore == dealerScore)){
-                menu.playerTies(players.get(i));
+                menu.playerTies(currentPlayer);
+                currentPlayer.changeBalance(currentBet);
             } else if(playerScore > 21){
-                menu.playerLoses(players.get(i));
-            } else if(dealerScore > 21){
-                menu.playerWins(players.get(i));
-            } else if (playerScore > dealerScore) {
-                menu.playerWins(players.get(i));
-            } else {
-                menu.playerLoses(players.get(i));
+                menu.playerLoses(currentPlayer);
+            } else if(dealerScore > 21 || playerScore > dealerScore){
+                menu.playerWins(currentPlayer);
+                currentPlayer.changeBalance(currentBet * 2);
+            }  else {
+                menu.playerLoses(currentPlayer);
             }
         }
     }
@@ -139,6 +183,7 @@ public class Blackjack {
         for(Player player : players){
             deck.discardHand(player.emptyHand());
         }
+        fixSplit();
         menu.clearedBoardMessage();
     }
     private void countCard(Card card){
@@ -161,6 +206,7 @@ public class Blackjack {
         countCard(players.get(0).getHand().get(0));
         menu.printCardCount(cardCount);
     }
+
     private void play(){
         for(int i = 1; i < players.size(); i++){
             isTurn = true;
@@ -176,6 +222,13 @@ public class Blackjack {
             dealerPlays();
         }
         determineWinners();
+    }
+    public void takeBets(){
+        for(int i = 1; i < players.size(); i++){
+            Player currentPlayer = players.get(i);
+            currentPlayer.setCurrentBet(menu.askForBet(currentPlayer));
+            currentPlayer.bet(currentPlayer.getCurrentBet());
+        }
     }
 
 }
