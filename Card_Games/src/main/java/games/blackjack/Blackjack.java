@@ -5,10 +5,13 @@ import games.deck.Deck;
 import games.menu.BlackjackMenu;
 import games.player.Player;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Blackjack {
     private final BlackjackMenu menu = new BlackjackMenu();
     private Deck deck = new Deck();
-    private Player[] players;
+    private List<Player> players;
     private final int STAND = 1;
     private final int HIT = 2;
     private final int DOUBLE_DOWN = 3;
@@ -41,12 +44,12 @@ public class Blackjack {
         deck = new Deck(numberOfDecks, true);
         return numberOfDecks;
     }
-    private Player[] createPlayers(){
+    private List<Player> createPlayers(){
         int numberOfPlayers = menu.askUserForNumberOfPlayers();
-        Player[] players = new Player[numberOfPlayers+1];
-        players[0] = new Player("The Dealer");
+        List<Player> players = new ArrayList<>();
+        players.add(new Player("The Dealer"));
         for(int i = 0; i < numberOfPlayers; i++){
-            players[i+1] = new Player(menu.askUserForName(i + 1));
+            players.add(new Player(menu.askUserForName(i + 1)));
         }
         return players;
     }
@@ -90,14 +93,14 @@ public class Blackjack {
         hit(player);
         stand();
     }
-    private Player[] splt(Player player){
-        //TODO
+    private void splt(Player player){
         Player player1 = new Player(player.getName());
         Player player2 = new Player(player.getName());
         player1.drawCard(player.dealCard());
         player2.drawCard(player.dealCard());
-        Player[] tempPlayers = new Player[]{player1, player2};
-        return tempPlayers;
+        players.remove(player);
+        players.add(player1);
+        players.add(player2);
     }
     private void surrender(Player player){
         deck.discardHand(player.emptyHand());
@@ -105,30 +108,30 @@ public class Blackjack {
     }
 
     private void dealerPlays(){
-        if(players[0].getBjHandValue() < 17){
-            hit(players[0]);
+        if(players.get(0).getBjHandValue() < 17){
+            hit(players.get(0));
         } else {
             stand();
         }
     }
 
     private void determineWinners(){
-        int dealerScore = players[0].getBjHandValue();
-        menu.showBlackjackHand(players[0]);
-        for(int i = 1; i < players.length; i++){
-            int playerScore = players[i].getBjHandValue();
+        int dealerScore = players.get(0).getBjHandValue();
+        menu.showBlackjackHand(players.get(0));
+        for(int i = 1; i < players.size(); i++){
+            int playerScore = players.get(i).getBjHandValue();
             if(playerScore == 0) {
-                menu.playerSurrendered(players[i]);
+                menu.playerSurrendered(players.get(i));
             } else if((playerScore > 21 && dealerScore > 21) || (playerScore == dealerScore)){
-                menu.playerTies(players[i]);
+                menu.playerTies(players.get(i));
             } else if(playerScore > 21){
-                menu.playerLoses(players[i]);
+                menu.playerLoses(players.get(i));
             } else if(dealerScore > 21){
-                menu.playerWins(players[i]);
+                menu.playerWins(players.get(i));
             } else if (playerScore > dealerScore) {
-                menu.playerWins(players[i]);
+                menu.playerWins(players.get(i));
             } else {
-                menu.playerLoses(players[i]);
+                menu.playerLoses(players.get(i));
             }
         }
     }
@@ -150,21 +153,21 @@ public class Blackjack {
         for(Card card : deck.getDiscardDeck()){
             countCard(card);
         }
-        for(int i = 1; i < players.length; i++){
-            for(Card card : players[i].getHand()){
+        for(int i = 1; i < players.size(); i++){
+            for(Card card : players.get(i).getHand()){
                 countCard(card);
             }
         }
-        countCard(players[0].getHand().get(0));
+        countCard(players.get(0).getHand().get(0));
         menu.printCardCount(cardCount);
     }
     private void play(){
-        for(int i = 1; i < players.length; i++){
+        for(int i = 1; i < players.size(); i++){
             isTurn = true;
             while(isTurn) {
-                menu.showBlackjackHand(players[i]);
+                menu.showBlackjackHand(players.get(i));
                 menu.blackjackActionMenu();
-                blackjackInput(menu.askForAction(), players[i]);
+                blackjackInput(menu.askForAction(), players.get(i));
             }
         }
         isTurn = true;
