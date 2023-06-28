@@ -1,4 +1,4 @@
-package games;
+package games.deck;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -6,9 +6,11 @@ import java.util.Map;
 public class Card {
     private String suit;
     private String rank;
+    public static final String[] SUITS_ARRAY = new String[]{"Spades", "Clubs", "Hearts", "Diamonds"};
+    public static final String[] RANKS_ARRAY = new String[]{"2", "3", "4", "5", "6", "7", "8", "9", "10", "Jack", "Queen", "King", "Ace"};
 
 
-
+    public Card(){};
     public Card(String rank, String suit){
         this.suit = suit;
         this.rank = rank;
@@ -56,7 +58,4 @@ public class Card {
         return cardValueMap.get(this.getRank());
     }
 
-    public void printCard(){
-        System.out.println(this.getRank() + " of " + this.getSuit());
-    }
 }
