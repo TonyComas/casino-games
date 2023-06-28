@@ -48,7 +48,7 @@ public class Blackjack {
         players = createPlayers();
         int numberOfDecks = menu.askUserForNumberOfDecks();
         deck = new Deck(numberOfDecks, true);
-        menu.askIfBetting();
+        isBetting = menu.askIfBetting();
         return numberOfDecks;
     }
     private List<Player> createPlayers(){
