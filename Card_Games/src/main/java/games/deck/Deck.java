@@ -58,7 +58,7 @@ public class Deck {
     }
     public void discardHand(List<Card> hand){
         while(hand.size() > 0){
-            discardDeck.add(hand.remove(0));
+            discardCard(hand.remove(0));
         }
     }
 

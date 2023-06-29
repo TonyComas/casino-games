@@ -73,6 +73,34 @@ public class Blackjack {
         }
     }
 
+    private void play(){
+        for(int i = 1; i < players.size(); i++){
+            isTurn = true;
+            while(isTurn) {
+                menu.showBlackjackHand(players.get(i));
+                menu.blackjackActionMenu();
+                blackjackInput(menu.askForAction(), players.get(i));
+            }
+        }
+        isTurn = true;
+        menu.dealerWilLPlayNow();
+        while(isTurn) {
+            dealerPlays();
+        }
+        determineWinners();
+    }
+    private void clearBoard(){
+        for(Player player : players){
+            deck.discardHand(player.emptyHand());
+        }
+        fixSplit();
+        menu.clearedBoardMessage();
+    }
+    private void offerCardCount(){
+        if(menu.wantToSeeCardCount()) {
+            showCardCount();
+        }
+    }
     private void blackjackInput(int input, Player player){
         if(input == STAND){
             stand();
@@ -100,12 +128,14 @@ public class Blackjack {
             isTurn = false;
         }
     }
+
     private void doubleDown(Player player){
         player.bet(player.getCurrentBet());
         player.setCurrentBet(player.getCurrentBet() * 2);
         hit(player);
         stand();
     }
+
     private void split(Player player){
         Player player1 = new Player(player.getName() + "'s first Split");
         Player player2 = new Player(player.getName() + "'s second Split");
@@ -145,12 +175,10 @@ public class Blackjack {
             }
         }
     }
-
     private void surrender(Player player){
         deck.discardHand(player.emptyHand());
         isTurn = false;
     }
-
     private void dealerPlays(){
         if(players.get(0).getBjHandValue() < 17){
             hit(players.get(0));
@@ -183,13 +211,7 @@ public class Blackjack {
             }
         }
     }
-    private void clearBoard(){
-        for(Player player : players){
-            deck.discardHand(player.emptyHand());
-        }
-        fixSplit();
-        menu.clearedBoardMessage();
-    }
+
     private void countCard(Card card){
         if(card.getBlackJackValue() >= 10){
             cardCount--;
@@ -212,29 +234,7 @@ public class Blackjack {
         }
         menu.printCardCount(cardCount);
     }
-
-    private void play(){
-        for(int i = 1; i < players.size(); i++){
-            isTurn = true;
-            while(isTurn) {
-                menu.showBlackjackHand(players.get(i));
-                menu.blackjackActionMenu();
-                blackjackInput(menu.askForAction(), players.get(i));
-            }
-        }
-        isTurn = true;
-        menu.dealerWilLPlayNow();
-        while(isTurn) {
-            dealerPlays();
-        }
-        determineWinners();
-    }
-    public void offerCardCount(){
-        if(menu.wantToSeeCardCount()) {
-            showCardCount();
-        }
-    }
-    public void takeBets(){
+    private void takeBets(){
         for(int i = 1; i < players.size(); i++){
             Player currentPlayer = players.get(i);
             currentPlayer.setCurrentBet(menu.askForBet(currentPlayer));

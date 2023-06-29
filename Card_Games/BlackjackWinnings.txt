@@ -1,6 +1,0 @@
-Tony|1000
-Laura|-250
-Tom|-500
-Pat|50
-------------------------------------
-The House owes a total of $300
