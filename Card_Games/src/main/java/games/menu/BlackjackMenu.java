@@ -177,7 +177,7 @@ public class BlackjackMenu {
             if(currentPlayer.getBalance() > 0){
                 System.out.println(currentPlayer.getName() + " Wins $" + currentPlayer.getBalance());
             } else if (currentPlayer.getBalance() < 0) {
-                System.out.println(currentPlayer.getName() + " Owes $" + currentPlayer.getBalance());
+                System.out.println(currentPlayer.getName() + " Owes $" + (currentPlayer.getBalance() * -1));
             } else {
                 System.out.println(currentPlayer.getName() + " Goes Home Even");
             }
