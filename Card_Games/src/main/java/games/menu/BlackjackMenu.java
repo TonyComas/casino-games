@@ -132,34 +132,23 @@ public class BlackjackMenu {
         System.out.println("The card count is " + count);
     }
     public boolean askUserToPlayAnotherRound(){
-        System.out.println("-----------------------------------");
-        System.out.println("Type 1 or yes to play another round");
-        System.out.print("Type anything else to return to main menu: ");
-        String userInput = in.nextLine();
-        if(userInput.equals("1") || userInput.equalsIgnoreCase("yes")){
-            return false;
-        }
-        return true;
+        askYesOrNo();
+        System.out.print("Would you like to play another round: ");
+        return !responseMustBeOneOrTwo();
+    }
+    public boolean wantToSeeCardCount() {
+        askYesOrNo();
+        System.out.println("Would you like a card count?");
+        return responseMustBeOneOrTwo();
     }
 
     public boolean askIfBetting() {
-        System.out.println("----------------");
-        System.out.println("1) Yes");
-        System.out.println("2) No");
+        askYesOrNo();
         System.out.println("Would you like to gamble?");
-        while (true) {
-            String userInput = in.nextLine();
-            if(userInput.equals("1")){
-                return true;
-            } else if (userInput.equals("2")) {
-                return false;
-            }
-            else{
-                System.out.println("Please enter a 1 or 2: ");
-            }
-        }
+        return responseMustBeOneOrTwo();
     }
     public int askForBet(Player player){
+        System.out.println("-----------------------------------");
         System.out.println(player.getName() + " has a balance of $" + player.getBalance());
         System.out.print("Enter the amount you would like to bet: $");
         int bet = 0;
@@ -195,5 +184,24 @@ public class BlackjackMenu {
             System.out.println("---");
         }
 
+    }
+    private void askYesOrNo(){
+        System.out.println("----------------");
+        System.out.println("1) Yes");
+        System.out.println("2) No");
+    }
+
+    private boolean responseMustBeOneOrTwo(){
+        while (true) {
+            String userInput = in.nextLine();
+            if(userInput.equals("1")){
+                return true;
+            } else if (userInput.equals("2")) {
+                return false;
+            }
+            else{
+                System.out.println("Please enter a 1 or 2: ");
+            }
+        }
     }
 }

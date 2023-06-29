@@ -16,6 +16,10 @@ public class Player {
         this.name = name;
 
     }
+    public Player(String name, int balance){
+        this.name = name;
+        this.balance = balance;
+    }
     public Player(List<Card> hand){
         this.hand = hand;
     }

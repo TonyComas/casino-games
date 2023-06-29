@@ -2,6 +2,7 @@ package games.blackjack;
 
 import games.deck.Card;
 import games.deck.Deck;
+import games.filereader.BlackjackWinningsFileWriter;
 import games.menu.BlackjackMenu;
 import games.player.Player;
 
@@ -12,6 +13,7 @@ public class Blackjack {
     private final BlackjackMenu menu = new BlackjackMenu();
     private Deck deck = new Deck();
     private List<Player> players;
+    private BlackjackWinningsFileWriter reportWriter = new BlackjackWinningsFileWriter();
     private final int STAND = 1;
     private final int HIT = 2;
     private final int DOUBLE_DOWN = 3;
@@ -36,11 +38,13 @@ public class Blackjack {
             }
             dealCards();
             play();
+            clearBoard();
             if(menu.askUserToPlayAnotherRound()){
+                reportWriter.writeTotalWinningsReport(players);
                 menu.showReceipt(players);
                 break;
             }
-            clearBoard();
+            offerCardCount();
         }
     }
     private int setUpTable(){
@@ -203,7 +207,9 @@ public class Blackjack {
                 countCard(card);
             }
         }
-        countCard(players.get(0).getHand().get(0));
+        if(players.get(0).getHand().size() > 0) {
+            countCard(players.get(0).getHand().get(0));
+        }
         menu.printCardCount(cardCount);
     }
 
@@ -222,6 +228,11 @@ public class Blackjack {
             dealerPlays();
         }
         determineWinners();
+    }
+    public void offerCardCount(){
+        if(menu.wantToSeeCardCount()) {
+            showCardCount();
+        }
     }
     public void takeBets(){
         for(int i = 1; i < players.size(); i++){
